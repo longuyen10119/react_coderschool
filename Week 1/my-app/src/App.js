@@ -17,6 +17,8 @@ class App extends Component {
       moviesList: [],
       isVisible: true,
       collapsed: true,
+      nowplaying_api: 'https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed',
+      highres_api: 'https://image.tmdb.org/t/p/original',
     };
   }
   toggleNavbar() {
@@ -33,7 +35,7 @@ class App extends Component {
     this.setState({
       moviesList: movieData.results,
       isVisible: false,
-
+      content: 'Now playing',
     })
   }
   refreshPage() {
@@ -45,7 +47,7 @@ class App extends Component {
         <div>
           <Navbar color="faded" light>
           <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
-          <NavbarBrand href="/" className="mr-auto">Flixie</NavbarBrand>
+          <NavbarBrand href="/" className="mr-auto">Flixie - {this.state.content}</NavbarBrand>
           <Collapse isOpen={!this.state.collapsed} navbar>
             <Nav navbar>
               <NavItem>
@@ -56,6 +58,9 @@ class App extends Component {
                   callback={record => console.log(record)}
                 />
               </NavItem>
+              <NavItem><NavLink>Now Playing</NavLink></NavItem>
+              <NavItem><NavLink>Top Rated</NavLink></NavItem>
+              <NavItem><NavLink>Release Date</NavLink></NavItem>
             </Nav>
           </Collapse>
         </Navbar>
@@ -71,6 +76,7 @@ class App extends Component {
                   overview={movie.overview}
                   id={movie.id}
                   poster_path={movie.poster_path}
+                  release_date={movie.release_date}
                 />
               )
             })
@@ -90,6 +96,7 @@ class Movie extends Component{
         <CardBody>
           <CardTitle><h3>{this.props.title}</h3></CardTitle>
           <CardSubtitle>{this.props.overview}</CardSubtitle>
+          <CardText><b>Release Date: </b>{this.props.release_date}</CardText>
         </CardBody>
       </Card>
     )
