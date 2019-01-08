@@ -45,7 +45,7 @@ class App extends Component {
         <div>
           <Navbar color="faded" light>
           <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
-          <NavbarBrand href="/" className="mr-auto">Flickies</NavbarBrand>
+          <NavbarBrand href="/" className="mr-auto">Flixie</NavbarBrand>
           <Collapse isOpen={!this.state.collapsed} navbar>
             <Nav navbar>
               <NavItem>
