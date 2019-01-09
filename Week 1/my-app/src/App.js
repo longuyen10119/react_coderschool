@@ -58,9 +58,9 @@ class App extends Component {
                   callback={record => console.log(record)}
                 />
               </NavItem>
-              <NavItem><NavLink>Now Playing</NavLink></NavItem>
-              <NavItem><NavLink>Top Rated</NavLink></NavItem>
-              <NavItem><NavLink>Release Date</NavLink></NavItem>
+              <NavItem><NavLink href="#">Now Playing</NavLink></NavItem>
+              <NavItem><NavLink href="#">Top Rated</NavLink></NavItem>
+              <NavItem><NavLink href="#">Release Date</NavLink></NavItem>
             </Nav>
           </Collapse>
         </Navbar>
@@ -68,7 +68,7 @@ class App extends Component {
         {
           this.state.isVisible === true ? (
             <ReactLoading type={"spinningBubbles"} color={"red"} height={100} width={100} />
-          ) : (
+            ) : (
             this.state.moviesList.map(movie => {
               return(
                 <Movie 
@@ -86,13 +86,19 @@ class App extends Component {
     );
   }
 }
+class highResShow extends Component{
+  render(){
+    return(
+      console.log('')
+    )
+  }
+}
 class Movie extends Component{
   render(){
     const moviePath = 'https://image.tmdb.org/t/p/w342' + this.props.poster_path;
     return (
-      
       <Card id={this.props.id} body outline color="secondary" inverse style={{ backgroundColor: '#333', borderColor: '#333' }}>
-        <CardImg top width={100} height={200} src={moviePath} alt="Card image cap" />
+        <CardImg onClick="" top width={100} height={200} src={moviePath} alt="Card image cap" />
         <CardBody>
           <CardTitle><h3>{this.props.title}</h3></CardTitle>
           <CardSubtitle>{this.props.overview}</CardSubtitle>
