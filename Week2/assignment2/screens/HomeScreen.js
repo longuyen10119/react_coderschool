@@ -115,28 +115,28 @@ class StatusBarBackground extends React.Component{
     );
   }
 }
-class fullResDialog extends React.Component{
-  render() {
-    return (
-      <View>
-        <Portal>
-          <Dialog
-             visible={this.state.visible}
-             onDismiss={this._hideDialog}>
-            <Dialog.Content>
-              <Image
-              source={require('/react-native/img/favicon.png')}
-              />
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={this._hideDialog}>Done</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </View>
-    );
-  }
-}
+// class fullResDialog extends React.Component{
+//   render() {
+//     return (
+//       <View>
+//         <Portal>
+//           <Dialog
+//              visible={this.state.visible}
+//              onDismiss={this._hideDialog}>
+//             <Dialog.Content>
+//               <Image
+//               source={require('/react-native/img/favicon.png')}
+//               />
+//             </Dialog.Content>
+//             <Dialog.Actions>
+//               <Button onPress={this._hideDialog}>Done</Button>
+//             </Dialog.Actions>
+//           </Dialog>
+//         </Portal>
+//       </View>
+//     );
+//   }
+// }
   
 const styles = StyleSheet.create({
   statusBarBackground: {
