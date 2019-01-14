@@ -3,7 +3,6 @@ import {
   Image,
   Platform,
   ScrollView,
-  StyleSheet,
   FlatList,
   Text,
   TouchableOpacity,
@@ -12,7 +11,7 @@ import {
 import { Card, Title, Paragraph, Button, Dialog, Portal } from 'react-native-paper';
 import nowPlaying from '../now_playing.json'
 import { WebBrowser } from 'expo';
-
+import styles from './styles.js'
 import { MonoText } from '../components/StyledText';
 
 export default class HomeScreen extends React.Component {
