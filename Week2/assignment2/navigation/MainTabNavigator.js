@@ -12,7 +12,7 @@ const HomeStack = createStackNavigator({
 });
 
 HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+  tabBarLabel: 'Now Playing',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -30,7 +30,7 @@ const LinksStack = createStackNavigator({
 });
 
 LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+  tabBarLabel: 'Top Rated',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -43,18 +43,18 @@ const SettingsStack = createStackNavigator({
   Settings: SettingsScreen,
 });
 
-SettingsStack.navigationOptions = {
-  tabBarLabel: 'Settings',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
-    />
-  ),
-};
+// SettingsStack.navigationOptions = {
+//   tabBarLabel: 'Settings',
+//   tabBarIcon: ({ focused }) => (
+//     <TabBarIcon
+//       focused={focused}
+//       name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
+//     />
+//   ),
+// };
 
 export default createBottomTabNavigator({
   HomeStack,
   LinksStack,
-  SettingsStack,
+  // SettingsStack,
 });
