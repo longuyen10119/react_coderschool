@@ -14,8 +14,8 @@ export default class TumblrPost extends Component {
     return (
       <View>
         <Image
-          style={{width: 350, height: 350, borderRadius: 20, borderWidth:5}}
-          source={{uri: img}}
+          style={{ width: 350, height: 350, borderRadius: 20, borderWidth: 5 }}
+          source={{ uri: img }}
         />
       </View>
     );

@@ -25,26 +25,26 @@ export default class App extends React.Component {
       page: 0,
     };
   }
-  async fetchWithPage(page) { 
+  async fetchWithPage(page) {
     // change fetch URL to use &offset=${page * 4} 
     const apiUrl = 'https://api.tumblr.com/v2/blog/itzahann/posts/photo'
     const apiKey = '779RldqZK31ib4Bz6dOfqiIMRaZ874ySoHjk0PkQAJhUBdtR0b'
 
-    const response =  await  fetch(`${apiUrl}?api_key=${apiKey}&offset=${page * 4}`);
+    const response = await fetch(`${apiUrl}?api_key=${apiKey}&limit=4&offset=${page * 4}`);
     const data = await response.json();
     this.setState({
-        posts: [...data.response.posts],
-        loading: false,
+      posts: [...data.response.posts],
+      loading: false,
     });
   }
-  async loadMore() { 
+  async loadMore() {
     console.log('test loadmore')
-    const newPage = this.state.page + 1; 
-    await this.fetchWithPage(newPage); 
-    this.setState({ page: newPage }); 
+    const newPage = this.state.page + 1;
+    await this.fetchWithPage(newPage);
+    this.setState({ page: newPage });
   }
 
-  async componentDidMount(){
+  async componentDidMount() {
     this.setState({
       loading: true,
     });
@@ -54,11 +54,11 @@ export default class App extends React.Component {
     console.log('....render');
     return (
       <View style={styles.container}>
-        <TumblrList 
+        <TumblrList
           posts={this.state.posts}
-          loadMore = {this.loadMore}
+          loadMore={this.loadMore}
           loading={this.state.loading}
-         />
+        />
       </View>
     );
   }
