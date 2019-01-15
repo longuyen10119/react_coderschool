@@ -6,11 +6,24 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import NavigatorScreen from '../screens/NavigatorScreen'
+import DetailsScreen from '../screens/details';
 
-const HomeStack = createStackNavigator({
-  Home: HomeScreen,
-});
-
+const HomeStack = createStackNavigator(
+  {
+    Home: {
+      screen: HomeScreen,
+    },
+    Details: {
+      screen: DetailsScreen,
+    }
+  },
+  {
+    initialRouteName: 'Home',
+  });
+// const Details = createStackNavigator({
+//   Details: DetailsScreen,
+// });
 HomeStack.navigationOptions = {
   tabBarLabel: 'Now Playing',
   tabBarIcon: ({ focused }) => (
