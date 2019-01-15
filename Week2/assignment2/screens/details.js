@@ -11,7 +11,11 @@ export default class DetailsScreen extends Component {
         this.state = {
         };
     }
-
+    static navigationOptions = ({ navigation }) => {
+        return {
+          title: navigation.getParam('title', 'Failed to get title'),
+        };
+      };
     render() {
         const { navigation } = this.props;
         const item = navigation.getParam('item', 'Fail to load');
@@ -34,8 +38,6 @@ export default class DetailsScreen extends Component {
                 <Card>
                     {/* <Card.Cover style={{ height: 500 }} source={{ uri: 'https://image.tmdb.org/t/p/original' + item.poster_path }} /> */}
                     <Card.Content>
-
-                        <Title>{item.title}</Title>
                         <Text>Vote: {item.vote_average}</Text>
                         <Text>Popularity: {item.popularity}</Text>
                         <Text>Release date: {item.release_date}</Text>

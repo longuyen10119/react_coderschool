@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   View,
-  NavigatorIOS,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { Searchbar } from 'react-native-paper';
@@ -51,18 +50,17 @@ export default class HomeScreen extends React.Component {
       isVisible: false,
       content: 'Now playing',
       refreshing: false,
-    }, ()=> {this.componentDidMount()})
+    })
   };
 
-  handleRefresh= () =>{
+  handleRefresh = () => {
     this.setState({
       refreshing: true,
-    });
+    }, () => { this.componentDidMount() });
   };
 
   render() {
     const { firstQuery } = this.state;
-
     return (
       this.state.isVisible === true ? (
         <View style={[styles.container, styles.horizontal]}>
@@ -76,17 +74,18 @@ export default class HomeScreen extends React.Component {
               onChangeText={query => {
                 this.setState({
                   firstQuery: query,
+                  refreshing: false,
                 })
                 if (this.state.firstQuery === '') {
                   this.setState({
                     moviesList: this.state.originalMovieList,
-                    refreshing: true,
+                    refreshing: false,
                   });
                 } else {
                   const newList = this.state.moviesList.filter(x => (x.title.includes(this.state.firstQuery) === true));
                   this.setState({
                     moviesList: newList,
-                    refreshing: true,
+                    refreshing: false,
                   });
                 }
               }
@@ -99,6 +98,7 @@ export default class HomeScreen extends React.Component {
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('Details',
                   {
                     item: item,
+                    title: item.title,
                   }
                 )}>
                   <Movie item={item} />
