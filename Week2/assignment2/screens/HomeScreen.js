@@ -11,7 +11,7 @@ import {
   NavigatorIOS,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { Card, Title, Paragraph, Button, Dialog, Portal } from 'react-native-paper';
+import { Searchbar } from 'react-native-paper';
 import { WebBrowser } from 'expo';
 import styles from './styles.js'
 import { MonoText } from '../components/StyledText';
@@ -26,11 +26,14 @@ export default class HomeScreen extends React.Component {
     super(props, context);
     this.state = {
       moviesList: [],
+      originalMovieList: [],
       isVisible: true,
       collapsed: true,
       nowplaying_api: 'https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed',
       highres_api: 'https://image.tmdb.org/t/p/original',
       dialogVisible: false,
+      firstQuery: '',
+      refreshing: false,
     };
   }
   _showDialog = () => this.setState({ dialogVisible: true });
@@ -44,12 +47,22 @@ export default class HomeScreen extends React.Component {
     await this.sleep(2000)
     this.setState({
       moviesList: movieData.results,
+      originalMovieList: movieData.results,
       isVisible: false,
       content: 'Now playing',
-    })
-  }
+      refreshing: false,
+    }, ()=> {this.componentDidMount()})
+  };
+
+  handleRefresh= () =>{
+    this.setState({
+      refreshing: true,
+    });
+  };
 
   render() {
+    const { firstQuery } = this.state;
+
     return (
       this.state.isVisible === true ? (
         <View style={[styles.container, styles.horizontal]}>
@@ -58,14 +71,42 @@ export default class HomeScreen extends React.Component {
       ) : (
           <View style={styles.container}>
             <StatusBarBackground style={{ backgroundColor: 'white' }} />
+            <Searchbar
+              placeholder="Search"
+              onChangeText={query => {
+                this.setState({
+                  firstQuery: query,
+                })
+                if (this.state.firstQuery === '') {
+                  this.setState({
+                    moviesList: this.state.originalMovieList,
+                    refreshing: true,
+                  });
+                } else {
+                  const newList = this.state.moviesList.filter(x => (x.title.includes(this.state.firstQuery) === true));
+                  this.setState({
+                    moviesList: newList,
+                    refreshing: true,
+                  });
+                }
+              }
+              }
+              value={firstQuery}
+            />
             <FlatList
               data={this.state.moviesList}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={()=>this.props.navigation.navigate('Details')}>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('Details',
+                  {
+                    item: item,
+                  }
+                )}>
                   <Movie item={item} />
                 </TouchableOpacity>
-                
+
               )}
+              refreshing={this.state.refreshing}
+              onRefresh={this.handleRefresh}
             />
           </View>
         )
