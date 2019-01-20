@@ -1,6 +1,7 @@
-import {createStackNavigator, createAppContainer} from 'react-navigation';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 import Home from './screens/HomeScreen.js'
 import Chat from './screens/ChatScreen.js'
+
 const Navigator = createStackNavigator({
     Home: {
         screen: Home
@@ -9,3 +10,4 @@ const Navigator = createStackNavigator({
         screen: Chat
     }
 })
+export default Navigator;
