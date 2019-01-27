@@ -32,7 +32,7 @@ export class MapScreen extends Component {
 
     const window = Dimensions.get('window');
     const { width, height } = window;
-    const latitudeDelta = 2;
+    const latitudeDelta = 12;
     const longitudeDelta = latitudeDelta * (width / height);
     console.log(longitudeDelta);
     return (
@@ -54,7 +54,7 @@ export class MapScreen extends Component {
               longitude: item.city.geo[1],
             }}>
             <View style={[styles.marker, { backgroundColor: item.color }]}>
-              <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white' }}>{item.aqi}</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{item.aqi}</Text>
             </View>
             <View style={[styles.arrow, { borderBottomColor: item.color }]} />
           </MapView.Marker>

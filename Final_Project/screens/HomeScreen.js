@@ -149,6 +149,7 @@ export default class HomeScreen extends React.Component {
   addingFromAddScreen = () => {
     const { navigation } = this.props;
     const item = navigation.getParam('item');
+
     if (item !== undefined) {
       let coord = {
         latitude: item.city.geo[0],
@@ -163,6 +164,7 @@ export default class HomeScreen extends React.Component {
           });
           console.log('Cards state');
           console.log(this.state.cards);
+          this.props.navigation.setParams({ item: undefined })
         })
         .catch(error => console.log(errror));
     }
@@ -200,7 +202,7 @@ export default class HomeScreen extends React.Component {
             return (
               <ScrollView
                 style={{
-                  flexGrow: 0.05,
+                  flexGrow: 0.06,
                   borderBottomColor: 'gray',
                   paddingBottom: 0,
                 }}

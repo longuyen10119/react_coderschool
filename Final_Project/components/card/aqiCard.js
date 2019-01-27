@@ -11,7 +11,7 @@ import {
   imageUnhealthySensitive,
   imageVeryUnhealthy
 } from '../../assets/images/index.js';
-const ANIMATION_DURATION = 300;
+const ANIMATION_DURATION = 400;
 const ROW_HEIGHT = 200;
 
 export default class AqiCard extends Component {
@@ -45,7 +45,7 @@ export default class AqiCard extends Component {
 
     const rowStyles = [
       {
-        padding: -10,
+        marginBottom: -10,
       },
       // styles.row,
       {

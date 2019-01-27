@@ -126,7 +126,7 @@ export default styles = StyleSheet.create({
     borderStyle: 'solid',
     borderLeftWidth: 30,
     borderRightWidth: 30,
-    borderBottomWidth: 10,
+    borderBottomWidth: 7,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
     borderTopRightRadius: 10,
