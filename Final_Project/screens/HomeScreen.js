@@ -7,6 +7,9 @@ import {
   TouchableHighlight,
   View,
   Modal,
+  FlatList,
+  ScrollView,
+  RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from '../styles.js';
@@ -41,33 +44,34 @@ export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalVisible: false,
+      refreshing: false,
       isVisible: true,
       aqi: [],
       location: null,
-      card: null,
-      cards: null,
+      card: [],
+      cards: [],
     };
     this.onTouchablePress.bind(this);
   }
-  setModalVisible = (visible) => {
-    this.setState({ modalVisible: visible });
+  _onRefresh = () => {
+    this.setState({ refreshing: true });
+    this.componentDidMount().then(() => {
+      this.setState({ refreshing: false });
+    });
   }
   // sleep function to wait for API and display LOAD screen
-  sleep = m => new Promise(r => setTimeout(r, m));
+  sleep = m => new Promise(resolve => setTimeout(resolve, m));
   componentWillMount() {
-    this._getLocationAsync();
+    // this._getLocationAsync();
   }
-  async componentDidMount() {
-    await this.sleep(1000);
-
+  fetchAPI = async (coords) => {
     const apiKey = `aaa897a24675dc5f2e87ad004b1d62eec6a33bbf`;
-    const { latitude, longitude } = this.state.location.coords;
+    const { latitude, longitude } = coords;
     const response = await fetch(`https://api.waqi.info/feed/geo:${latitude};${longitude}/?token=${apiKey}`);
     const aqi = await response.json();
-
-    await this.sleep(1000);
-    console.log(aqi);
+    return aqi;
+  }
+  parsingAqi = async (aqi) => {
     const number = aqi.data.aqi;
     let condition = '';
     let imgPath = '';
@@ -126,11 +130,43 @@ export default class HomeScreen extends React.Component {
       imgPath,
       pm25: aqi.data.iaqi.pm25.v,
     }
-    this.setState({
-      card: [aCard],
-      isVisible: false,
-    });
+    return aCard;
+  };
+
+  async componentDidMount() {
+    this._getLocationAsync()
+      .then(result => this.fetchAPI(result))
+      .then(result => this.parsingAqi(result))
+      .then(result => {
+        this.setState({
+          isVisible: false,
+          card: [result],
+        });
+      })
+      .catch((error) => console.log(error));
+
   }
+  addingFromAddScreen = () => {
+    const { navigation } = this.props;
+    const item = navigation.getParam('item');
+    if (item !== undefined) {
+      let coord = {
+        latitude: item.city.geo[0],
+        longitude: item.city.geo[1]
+      }
+      this.fetchAPI(coord)
+        .then(result => this.parsingAqi(result))
+        .then(result => {
+          console.log(result);
+          this.setState({
+            cards: [...this.state.cards, result]
+          });
+          console.log('Cards state');
+          console.log(this.state.cards);
+        })
+        .catch(error => console.log(errror));
+    }
+  };
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
@@ -140,10 +176,9 @@ export default class HomeScreen extends React.Component {
     }
     let location = await Location.getCurrentPositionAsync({});
     this.setState({ location });
+    return location.coords;
   };
-  whenAdding = () => {
 
-  }
   onTouchablePress = (item) => {
     // console.log(item);
     this.props.navigation.navigate('Map', {
@@ -151,6 +186,7 @@ export default class HomeScreen extends React.Component {
       item,
     });
   }
+
   render() {
     if (this.state.isVisible) {
       return (
@@ -162,14 +198,46 @@ export default class HomeScreen extends React.Component {
 
           {this.state.card.map((item, i) => {
             return (
+              <ScrollView
+                style={{
+                  flexGrow: 0.05,
+                  borderBottomColor: 'gray',
+                  paddingBottom: 0,
+                }}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.refreshing}
+                    onRefresh={this._onRefresh}
+                  />
+                }
+                key={i}>
+                <TouchableOpacity key={i} onPress={() => this.onTouchablePress(item)}>
+                  <AqiCard name='current' aqi={item} />
+                </TouchableOpacity>
+              </ScrollView>
+            )
+          })}
+          {/* {this.state.cards.map((item, i) => {
+            return (
               <TouchableOpacity key={i} onPress={() => this.onTouchablePress(item)}>
                 <AqiCard aqi={item} />
               </TouchableOpacity>
             )
-          })}
+          })} */}
 
+          <FlatList
+            data={this.state.cards}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => this.onTouchablePress(item)}>
+                <AqiCard name='saved' aqi={item} />
+              </TouchableOpacity>
+            )}
+          />
           <View style={styles.addButton}>
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('Add')}>
+            <TouchableOpacity onPress={
+              () => this.props.navigation.navigate('Add', { addCall: this.addingFromAddScreen.bind(this) })
+            }>
               <AddButton />
             </TouchableOpacity>
           </View>

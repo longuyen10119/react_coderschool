@@ -24,13 +24,20 @@ class AddScreen extends Component {
     this.onBlurText.bind(this);
     this.onFocusSearch.bind(this);
   }
+  componentWillUnmount = () => {
+    const { params } = this.props.navigation.state;
+    params.addCall();
+  };
+
   getSearchResults = async () => {
-    console.log('Running fetch');
     const apiKey = `aaa897a24675dc5f2e87ad004b1d62eec6a33bbf`;
     const query = this.state.searchText;
-    const response = await fetch(`https://api.waqi.info/search/?token=${apiKey}&keyword=${query}`);
-    const resJSON = await response.json();
-    return resJSON;
+
+    if (query !== '') {
+      const response = await fetch(`https://api.waqi.info/search/?token=${apiKey}&keyword=${query}`);
+      const resJSON = await response.json();
+      return resJSON;
+    }
   };
   renderSeparator = () => {
     return (
@@ -109,8 +116,7 @@ class AddScreen extends Component {
   onBlurText = (e) => {
     this.getSearchResults().then(
       result => {
-        if (result.data !== null) {
-          console.log(result.data);
+        if (result.data !== undefined || result.data !== null) {
           const parsedResults = this.parsingAqi(result.data);
           console.log(parsedResults);
           this.setState({
@@ -143,7 +149,7 @@ class AddScreen extends Component {
           searchIcon={{ size: 24 }}
           onBlur={(e) => this.onBlurText(e)}
           onChangeText={(e) => (this.setSearchText(e))}
-          onClear={console.log('')}
+          onClear={() => console.log('ON clear')}
           placeholder='Search...'
           onFocus={(e) => (this.onFocusSearch(e))} />
 
@@ -153,7 +159,7 @@ class AddScreen extends Component {
           renderItem={({ item }) => (
             <ListItem
               component={TouchableOpacity}
-              onPress={() => { console.log('Pressed') }}
+              onPress={() => this.props.navigation.navigate('Home', { item })}
               wrapperStyle={{ flexDirection: 'row-reverse' }}
               badge={
                 {

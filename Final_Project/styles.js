@@ -17,7 +17,7 @@ export default styles = StyleSheet.create({
     marginHorizontal: 10,
     padding: 20,
     shadowColor: 'gray',
-    shadowOffset: { width: 8, height: 8 },
+    shadowOffset: { width: 12, height: 12 },
     shadowOpacity: .8,
     shadowRadius: 8,
     opacity: 20,
@@ -88,6 +88,7 @@ export default styles = StyleSheet.create({
     fontSize: 12,
   },
   location: {
+    fontWeight: 'bold',
     color: '#661400',
     fontSize: 15,
     marginBottom: -15,
@@ -134,5 +135,11 @@ export default styles = StyleSheet.create({
       { rotate: '180deg' }
     ],
   },
+  // row: {
+  //   flexDirection: 'row',
+  //   paddingHorizontal: 15,
+  //   alignItems: 'center',
+  //   height: ROW_HEIGHT,
+  // },
 
 });
