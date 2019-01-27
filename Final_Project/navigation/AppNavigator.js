@@ -7,10 +7,13 @@ import Map from '../screens/MapScreen';
 
 const Navigator = createStackNavigator({
   Home: {
-    screen: Home
+    screen: Home,
   },
   Map: {
-    screen: Map
+    screen: Map,
+  },
+  Add: {
+    screen: Add,
   },
 })
 export default Navigator;
