@@ -106,8 +106,6 @@ class AddScreen extends Component {
         dayOfWeek: weekday[dtr.getDay()],
         color,
         city: item.station,
-        // imgPath,
-        // pm25: aqi.data.iaqi.pm25.v,
       }
       newResults.push(newItem);
     }

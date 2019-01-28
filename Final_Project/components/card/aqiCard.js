@@ -3,6 +3,8 @@ import { View, Text, Image, Animated } from 'react-native';
 import styles from '../../styles.js'
 import LoadingScreen from '../../screens/LoadingScreen';
 // import Image from 'react-native-remote-svg'
+import { LinearGradient } from 'expo';
+
 import {
   imageDangerous,
   imageGood,
@@ -42,7 +44,6 @@ export default class AqiCard extends Component {
     const info = this.props.aqi;
     const type = this.props.name;
     const typeStyle = (type == 'current') ? styles.card : styles.otherCard
-
     const rowStyles = [
       {
         marginBottom: -10,
@@ -69,10 +70,27 @@ export default class AqiCard extends Component {
         ],
       },
     ];
+    // const backColor = info.color;
     return (
       <Animated.View style={rowStyles}>
 
-        <View style={[typeStyle, { backgroundColor: info.color }]}>
+        <View style={[typeStyle,
+          // { backgroundColor: info.color }
+        ]}>
+          <LinearGradient
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+            colors={['white', info.color]}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              // bottom: 10,
+              height: 180,
+              borderRadius: 10,
+              // flex: .5
+            }}
+          />
           <View style={styles.firstRow}>
             <View style={styles.leftSide}>
               {/* <Image 
@@ -86,9 +104,13 @@ export default class AqiCard extends Component {
             </View>
             <View style={styles.rightSide}>
               <Text style={styles.aqiStyle}>{info.aqi}</Text>
-              <Text>{info.condition}</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                {info.condition}
+              </Text>
               <Text>Updated: {info.dayOfWeek} {''} {info.time}</Text>
-              <Text>PM25: {info.pm25}</Text>
+              <Text>PM10: {info.pm10}</Text>
+              <Text>N02: {info.no2}</Text>
+              <Text>O3: {info.o3}</Text>
             </View>
           </View>
           <View style={styles.secondRow}>

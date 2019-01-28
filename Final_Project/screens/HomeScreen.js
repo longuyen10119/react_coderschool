@@ -10,15 +10,19 @@ import {
   FlatList,
   ScrollView,
   RefreshControl,
+  Button,
+  AsyncStorage,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from '../styles.js';
 import AqiCard from '../components/card/aqiCard.js';
 import AddButton from '../components/addButton';
 import CloseButton from '../components/closeButton';
-
+import Swipeout from 'react-native-swipeout';
 import { Constants, Location, Permissions } from 'expo';
 import LoadingScreen from './LoadingScreen';
+// import database from '../Fire';
+
 import {
   imageDangerous,
   imageGood,
@@ -53,6 +57,7 @@ export default class HomeScreen extends React.Component {
     };
     this.onTouchablePress.bind(this);
   }
+
   _onRefresh = () => {
     this.setState({ refreshing: true });
     this.componentDidMount().then(() => {
@@ -69,12 +74,16 @@ export default class HomeScreen extends React.Component {
     const { latitude, longitude } = coords;
     const response = await fetch(`https://api.waqi.info/feed/geo:${latitude};${longitude}/?token=${apiKey}`);
     const aqi = await response.json();
+    console.log('IN FETCH API')
+    console.log(aqi);
     return aqi;
   }
   parsingAqi = async (aqi) => {
     const number = aqi.data.aqi;
     let condition = '';
     let imgPath = '';
+    console.log('IN Parsing AQI')
+    console.log(aqi);
     //Set color and condition
     switch (true) {
       case (number > 300):
@@ -119,6 +128,18 @@ export default class HomeScreen extends React.Component {
     weekday[5] = "Friday";
     weekday[6] = "Saturday";
     let dtr = new Date(date);
+    let pm10, no2, o3;
+    try {
+      pm10 = (aqi.data.iaqi.pm10.v);
+      no2 = (aqi.data.iaqi.no2.v);
+      o3 = (aqi.data.iaqi.o3.v);
+    }
+    catch (error) {
+      console.log(error);
+      pm10 = ' ';
+      no2 = '';
+      o3 = ''
+    }
 
     let aCard = {
       aqi: number,
@@ -128,11 +149,30 @@ export default class HomeScreen extends React.Component {
       color,
       city: aqi.data.city,
       imgPath,
-      pm25: aqi.data.iaqi.pm25.v,
+      pm10,
+      o3,
+      no2,
     }
+    console.log(aCard);
     return aCard;
   };
+  updateSavedCards = async (...restArgs) => {
+    console.log('UPDATER SDAVE DCARDs');
+    if (restArgs.length == 1) {
+      let updateCards = [];
+      restArgs[0].map((item, i) => {
+        console.log('iterating in update save careds')
+        console.log(item);
+        console.log(item.city.geo[0], item.city.geo[1]);
+        this.fetchAPI(item.city.geo[0], item.city.geo[1])
+          .then(result => this.parsingAqi(result))
+          .then(result => updateCards.push(result))
 
+      });
+      return updateCards;
+    }
+
+  };
   async componentDidMount() {
     this._getLocationAsync()
       .then(result => this.fetchAPI(result))
@@ -143,13 +183,25 @@ export default class HomeScreen extends React.Component {
           card: [result],
         });
       })
-      .catch((error) => console.log(error));
+      .then(() => this.sleep(500))
+      .then(() => AsyncStorage.getItem('cards'))
+      .then(result => JSON.parse(result))
+      .then(result => this.updateSavedCards(result))
+      .then(json => this.setState({
+        cards: [...json],
+      }))
+      .catch((error) => console.log('Componnent did mount' + error));
 
+  }
+  updateAsyncStorage = async () => {
+    console.log('In UPDATE ASYNC STORAGE');
+    return AsyncStorage.setItem('cards', JSON.stringify(this.state.cards))
   }
   addingFromAddScreen = () => {
     const { navigation } = this.props;
     const item = navigation.getParam('item');
-
+    // console.log('IN addingFromAddScreen');
+    // console.log(item);
     if (item !== undefined) {
       let coord = {
         latitude: item.city.geo[0],
@@ -158,15 +210,15 @@ export default class HomeScreen extends React.Component {
       this.fetchAPI(coord)
         .then(result => this.parsingAqi(result))
         .then(result => {
-          console.log(result);
+          // console.log('After PARSING AQI')
+          // console.log(result);
           this.setState({
             cards: [...this.state.cards, result]
           });
-          console.log('Cards state');
-          console.log(this.state.cards);
-          this.props.navigation.setParams({ item: undefined })
+          this.props.navigation.setParams({ item: undefined });
         })
-        .catch(error => console.log(errror));
+        .then(() => this.updateAsyncStorage())
+        .catch(error => console.log('Adding fromm add screen' + errror));
     }
   };
   _getLocationAsync = async () => {
@@ -186,10 +238,43 @@ export default class HomeScreen extends React.Component {
     this.props.navigation.navigate('Map', {
       itemID: 100,
       item,
+      cards: this.state.cards,
     });
-  }
+  };
+  onTouchableLongPress = (item) => {
+    let found = false
+    for (let card of this.state.cards) {
+      if (card.city.name === item.city.name) {
+        found = true;
+        break;
+      };
+    }
+    if (!found) {
+      this.setState({
+        cards: [...this.state.cards, item]
+      });
+      this.updateAsyncStorage()
+    } else {
+      alert('Already in your List');
+    }
 
+  };
+
+  deleteCard = (item) => {
+    const newCards = this.state.cards.filter(x => (x.city.name !== item.city.name));
+    this.setState({
+      cards: [...newCards],
+    }, () => this.updateAsyncStorage());
+  };
   render() {
+    // let swipeBtns = [{
+    //   text: 'Delete',
+    //   backgroundColor: '#f4511e',
+    //   borderRadius: 20,
+    //   paddingTop: 10,
+    //   underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
+    //   onPress: () => { alert('Delete') }
+    // }];
     if (this.state.isVisible) {
       return (
         <LoadingScreen />
@@ -200,23 +285,12 @@ export default class HomeScreen extends React.Component {
 
           {this.state.card.map((item, i) => {
             return (
-              <ScrollView
-                style={{
-                  flexGrow: 0.06,
-                  borderBottomColor: 'gray',
-                  paddingBottom: 0,
-                }}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={this.state.refreshing}
-                    onRefresh={this._onRefresh}
-                  />
-                }
-                key={i}>
-                <TouchableOpacity key={i} onPress={() => this.onTouchablePress(item)}>
-                  <AqiCard name='current' aqi={item} />
-                </TouchableOpacity>
-              </ScrollView>
+              <TouchableOpacity
+                onLongPress={() => this.onTouchableLongPress(item)}
+                key={i}
+                onPress={() => this.onTouchablePress(item)}>
+                <AqiCard name='current' aqi={item} />
+              </TouchableOpacity>
             )
           })}
           {/* {this.state.cards.map((item, i) => {
@@ -228,12 +302,31 @@ export default class HomeScreen extends React.Component {
           })} */}
 
           <FlatList
+            refreshing={this.state.refreshing}
+            onRefresh={() => this._onRefresh()}
             data={this.state.cards}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => this.onTouchablePress(item)}>
-                <AqiCard name='saved' aqi={item} />
-              </TouchableOpacity>
+              <Swipeout
+                right={[{
+                  text: 'Delete',
+                  backgroundColor: '#f4511e',
+                  borderRadius: 20,
+                  paddingTop: 10,
+                  // underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
+                  onPress: () => { this.deleteCard(item) }
+                }]}
+                autoClose={true}
+                backgroundColor='transparent'
+                style={{ paddingBottom: 5, paddingTop: -5 }}
+              >
+                <TouchableOpacity onPress={() => this.onTouchablePress(item)}>
+
+                  <AqiCard name='saved' aqi={item} />
+
+                </TouchableOpacity>
+              </Swipeout>
+
             )}
           />
           <View style={styles.addButton}>

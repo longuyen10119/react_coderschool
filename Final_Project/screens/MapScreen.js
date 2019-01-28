@@ -29,12 +29,23 @@ export class MapScreen extends Component {
   render() {
     const { navigation } = this.props;
     const item = navigation.getParam('item');
-
+    let cards = navigation.getParam('cards');
+    // check if item is inside cards (for rendering purpose)
+    let found = false;
+    for (let card of cards) {
+      if (card.city.name === item.city.name) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      cards = [...cards, item];
+    };
+    console.log(cards);
     const window = Dimensions.get('window');
     const { width, height } = window;
     const latitudeDelta = 12;
     const longitudeDelta = latitudeDelta * (width / height);
-    console.log(longitudeDelta);
     return (
       <View style={styles.container}>
         <MapView
@@ -46,18 +57,23 @@ export class MapScreen extends Component {
             // longitudeDelta: 0.0421,
             longitudeDelta,
           }}>
+          {cards.map((item, i) => {
+            return (
+              <MapView.Marker
+                key={i}
+                onPress={this.setModalVisible}
+                coordinate={{
+                  latitude: item.city.geo[0],
+                  longitude: item.city.geo[1],
+                }}>
+                <View style={[styles.marker, { backgroundColor: item.color }]}>
+                  <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{item.aqi}</Text>
+                </View>
+                <View style={[styles.arrow, { borderBottomColor: item.color }]} />
+              </MapView.Marker>
+            )
+          })}
 
-          <MapView.Marker
-            onPress={this.setModalVisible}
-            coordinate={{
-              latitude: item.city.geo[0],
-              longitude: item.city.geo[1],
-            }}>
-            <View style={[styles.marker, { backgroundColor: item.color }]}>
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{item.aqi}</Text>
-            </View>
-            <View style={[styles.arrow, { borderBottomColor: item.color }]} />
-          </MapView.Marker>
 
 
         </MapView>
