@@ -49,7 +49,7 @@ export class MapScreen extends Component {
   componentWillMount = async () => {
     const { navigation } = this.props;
     const item = navigation.getParam('item');
-    // console.log(item);
+    console.log(item);
     let cards = navigation.getParam('cards');
     // check if item is inside cards (for rendering purpose)
     let found = false;
@@ -89,7 +89,7 @@ export class MapScreen extends Component {
     const returnData = await parsingForMapScreen(result);
     this.setState({
       markers: [...returnData],
-    });
+    }, () => console.log(this.state.markers));
   };
 
   render() {
@@ -113,7 +113,7 @@ export class MapScreen extends Component {
                 {/* <MapView.Callout tooltip={true} >
                   <Text>helloooooo</Text>
                 </MapView.Callout> */}
-
+                {/* {if(item.city.name===cho)} */}
                 <View style={[styles.marker, { backgroundColor: item.color }]}>
                   <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'white' }}>{item.aqi}</Text>
                 </View>
