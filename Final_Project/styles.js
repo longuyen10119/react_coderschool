@@ -113,20 +113,28 @@ export default styles = StyleSheet.create({
     justifyContent: 'center',
   },
   marker: {
+    width: 40,
+    height: 25,
     backgroundColor: '#550bbc',
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5
+    borderRadius: 5,
+    shadowColor: 'gray',
+    shadowOffset: { width: 10, height: 10 },
+    shadowOpacity: .5,
+    shadowRadius: 2,
+    opacity: 20,
   },
   arrow: {
+    opacity: 20,
     width: 0,
     height: 0,
     backgroundColor: 'transparent',
     borderStyle: 'solid',
-    borderLeftWidth: 30,
-    borderRightWidth: 30,
-    borderBottomWidth: 7,
+    borderLeftWidth: 20,
+    borderRightWidth: 20,
+    borderBottomWidth: 8,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
     borderTopRightRadius: 10,
@@ -134,6 +142,12 @@ export default styles = StyleSheet.create({
     transform: [
       { rotate: '180deg' }
     ],
+  },
+  callout: {
+    height: 100,
+    width: 200,
+    backgroundColor: 'white',
+    borderRadius: 20,
   },
   // row: {
   //   flexDirection: 'row',
